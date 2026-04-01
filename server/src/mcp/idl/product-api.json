@@ -1,0 +1,375 @@
+{
+  "name": "product-api",
+  "version": "1.0.0",
+  "description": "商品API接口定义",
+  "interfaces": [
+    {
+      "name": "Product",
+      "description": "商品信息",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "商品ID"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "商品名称"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "商品描述"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": "价格"
+        },
+        {
+          "name": "originalPrice",
+          "type": "number",
+          "required": false,
+          "description": "原价"
+        },
+        {
+          "name": "stock",
+          "type": "number",
+          "required": true,
+          "description": "库存"
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": true,
+          "description": "商品分类"
+        },
+        {
+          "name": "brand",
+          "type": "string",
+          "required": false,
+          "description": "品牌"
+        },
+        {
+          "name": "images",
+          "type": "array",
+          "required": false,
+          "description": "商品图片",
+          "itemType": "string"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "description": "商品状态"
+        },
+        {
+          "name": "createdAt",
+          "type": "date",
+          "required": true,
+          "description": "创建时间"
+        },
+        {
+          "name": "updatedAt",
+          "type": "date",
+          "required": true,
+          "description": "更新时间"
+        }
+      ]
+    },
+    {
+      "name": "ProductCategory",
+      "description": "商品分类",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "分类ID"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "分类名称"
+        },
+        {
+          "name": "parentId",
+          "type": "string",
+          "required": false,
+          "description": "父分类ID"
+        },
+        {
+          "name": "level",
+          "type": "number",
+          "required": true,
+          "description": "分类层级"
+        },
+        {
+          "name": "sort",
+          "type": "number",
+          "required": false,
+          "description": "排序"
+        }
+      ]
+    },
+    {
+      "name": "ProductReview",
+      "description": "商品评价",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "评价ID"
+        },
+        {
+          "name": "productId",
+          "type": "string",
+          "required": true,
+          "description": "商品ID"
+        },
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        },
+        {
+          "name": "rating",
+          "type": "number",
+          "required": true,
+          "description": "评分"
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": false,
+          "description": "评价内容"
+        },
+        {
+          "name": "images",
+          "type": "array",
+          "required": false,
+          "description": "评价图片",
+          "itemType": "string"
+        },
+        {
+          "name": "createdAt",
+          "type": "date",
+          "required": true,
+          "description": "创建时间"
+        }
+      ]
+    }
+  ],
+  "methods": [
+    {
+      "name": "getProduct",
+      "description": "获取商品详情",
+      "parameters": [
+        {
+          "name": "productId",
+          "type": "string",
+          "required": true,
+          "description": "商品ID"
+        }
+      ],
+      "returns": {
+        "name": "product",
+        "type": "interface",
+        "required": true,
+        "description": "商品信息",
+        "interfaceRef": "Product"
+      }
+    },
+    {
+      "name": "createProduct",
+      "description": "创建商品",
+      "parameters": [
+        {
+          "name": "product",
+          "type": "interface",
+          "required": true,
+          "description": "商品信息",
+          "interfaceRef": "Product"
+        }
+      ],
+      "returns": {
+        "name": "productId",
+        "type": "string",
+        "required": true,
+        "description": "创建的商品ID"
+      }
+    },
+    {
+      "name": "updateProduct",
+      "description": "更新商品信息",
+      "parameters": [
+        {
+          "name": "productId",
+          "type": "string",
+          "required": true,
+          "description": "商品ID"
+        },
+        {
+          "name": "product",
+          "type": "interface",
+          "required": true,
+          "description": "商品信息",
+          "interfaceRef": "Product"
+        }
+      ],
+      "returns": {
+        "name": "success",
+        "type": "boolean",
+        "required": true,
+        "description": "是否成功"
+      }
+    },
+    {
+      "name": "deleteProduct",
+      "description": "删除商品",
+      "parameters": [
+        {
+          "name": "productId",
+          "type": "string",
+          "required": true,
+          "description": "商品ID"
+        }
+      ],
+      "returns": {
+        "name": "success",
+        "type": "boolean",
+        "required": true,
+        "description": "是否成功"
+      }
+    },
+    {
+      "name": "listProducts",
+      "description": "获取商品列表",
+      "parameters": [
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "商品分类"
+        },
+        {
+          "name": "page",
+          "type": "number",
+          "required": false,
+          "description": "页码"
+        },
+        {
+          "name": "pageSize",
+          "type": "number",
+          "required": false,
+          "description": "每页数量"
+        },
+        {
+          "name": "sort",
+          "type": "string",
+          "required": false,
+          "description": "排序方式"
+        }
+      ],
+      "returns": {
+        "name": "products",
+        "type": "array",
+        "required": true,
+        "description": "商品列表",
+        "itemType": "interface",
+        "interfaceRef": "Product"
+      }
+    },
+    {
+      "name": "searchProducts",
+      "description": "搜索商品",
+      "parameters": [
+        {
+          "name": "keyword",
+          "type": "string",
+          "required": true,
+          "description": "搜索关键词"
+        },
+        {
+          "name": "page",
+          "type": "number",
+          "required": false,
+          "description": "页码"
+        },
+        {
+          "name": "pageSize",
+          "type": "number",
+          "required": false,
+          "description": "每页数量"
+        }
+      ],
+      "returns": {
+        "name": "products",
+        "type": "array",
+        "required": true,
+        "description": "商品列表",
+        "itemType": "interface",
+        "interfaceRef": "Product"
+      }
+    },
+    {
+      "name": "getProductReviews",
+      "description": "获取商品评价",
+      "parameters": [
+        {
+          "name": "productId",
+          "type": "string",
+          "required": true,
+          "description": "商品ID"
+        },
+        {
+          "name": "page",
+          "type": "number",
+          "required": false,
+          "description": "页码"
+        },
+        {
+          "name": "pageSize",
+          "type": "number",
+          "required": false,
+          "description": "每页数量"
+        }
+      ],
+      "returns": {
+        "name": "reviews",
+        "type": "array",
+        "required": true,
+        "description": "评价列表",
+        "itemType": "interface",
+        "interfaceRef": "ProductReview"
+      }
+    },
+    {
+      "name": "createProductReview",
+      "description": "创建商品评价",
+      "parameters": [
+        {
+          "name": "review",
+          "type": "interface",
+          "required": true,
+          "description": "评价信息",
+          "interfaceRef": "ProductReview"
+        }
+      ],
+      "returns": {
+        "name": "reviewId",
+        "type": "string",
+        "required": true,
+        "description": "评价ID"
+      }
+    }
+  ]
+}

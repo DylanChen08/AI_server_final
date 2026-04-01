@@ -1,0 +1,427 @@
+{
+  "name": "order-api",
+  "version": "1.0.0",
+  "description": "订单API接口定义",
+  "interfaces": [
+    {
+      "name": "Order",
+      "description": "订单信息",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "订单ID"
+        },
+        {
+          "name": "orderNo",
+          "type": "string",
+          "required": true,
+          "description": "订单号"
+        },
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "description": "订单状态"
+        },
+        {
+          "name": "totalAmount",
+          "type": "number",
+          "required": true,
+          "description": "订单总金额"
+        },
+        {
+          "name": "discountAmount",
+          "type": "number",
+          "required": false,
+          "description": "优惠金额"
+        },
+        {
+          "name": "actualAmount",
+          "type": "number",
+          "required": true,
+          "description": "实际支付金额"
+        },
+        {
+          "name": "paymentMethod",
+          "type": "string",
+          "required": true,
+          "description": "支付方式"
+        },
+        {
+          "name": "shippingMethod",
+          "type": "string",
+          "required": true,
+          "description": "配送方式"
+        },
+        {
+          "name": "shippingAddress",
+          "type": "string",
+          "required": true,
+          "description": "收货地址"
+        },
+        {
+          "name": "receiverName",
+          "type": "string",
+          "required": true,
+          "description": "收货人姓名"
+        },
+        {
+          "name": "receiverPhone",
+          "type": "string",
+          "required": true,
+          "description": "收货人电话"
+        },
+        {
+          "name": "orderType",
+          "type": "string",
+          "required": true,
+          "description": "订单类型"
+        },
+        {
+          "name": "invoiceType",
+          "type": "string",
+          "required": false,
+          "description": "发票类型"
+        },
+        {
+          "name": "couponCode",
+          "type": "string",
+          "required": false,
+          "description": "优惠券代码"
+        },
+        {
+          "name": "remark",
+          "type": "string",
+          "required": false,
+          "description": "备注"
+        },
+        {
+          "name": "createdAt",
+          "type": "date",
+          "required": true,
+          "description": "创建时间"
+        },
+        {
+          "name": "updatedAt",
+          "type": "date",
+          "required": true,
+          "description": "更新时间"
+        }
+      ]
+    },
+    {
+      "name": "OrderItem",
+      "description": "订单商品",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "订单商品ID"
+        },
+        {
+          "name": "orderId",
+          "type": "string",
+          "required": true,
+          "description": "订单ID"
+        },
+        {
+          "name": "productId",
+          "type": "string",
+          "required": true,
+          "description": "商品ID"
+        },
+        {
+          "name": "productName",
+          "type": "string",
+          "required": true,
+          "description": "商品名称"
+        },
+        {
+          "name": "productImage",
+          "type": "string",
+          "required": false,
+          "description": "商品图片"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": "商品单价"
+        },
+        {
+          "name": "quantity",
+          "type": "number",
+          "required": true,
+          "description": "购买数量"
+        },
+        {
+          "name": "totalPrice",
+          "type": "number",
+          "required": true,
+          "description": "小计"
+        }
+      ]
+    },
+    {
+      "name": "OrderLogistics",
+      "description": "订单物流",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "物流ID"
+        },
+        {
+          "name": "orderId",
+          "type": "string",
+          "required": true,
+          "description": "订单ID"
+        },
+        {
+          "name": "trackingNo",
+          "type": "string",
+          "required": true,
+          "description": "物流单号"
+        },
+        {
+          "name": "shippingCompany",
+          "type": "string",
+          "required": true,
+          "description": "物流公司"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "description": "物流状态"
+        },
+        {
+          "name": "estimatedDeliveryTime",
+          "type": "date",
+          "required": false,
+          "description": "预计送达时间"
+        },
+        {
+          "name": "actualDeliveryTime",
+          "type": "date",
+          "required": false,
+          "description": "实际送达时间"
+        },
+        {
+          "name": "createdAt",
+          "type": "date",
+          "required": true,
+          "description": "创建时间"
+        },
+        {
+          "name": "updatedAt",
+          "type": "date",
+          "required": true,
+          "description": "更新时间"
+        }
+      ]
+    }
+  ],
+  "methods": [
+    {
+      "name": "getOrder",
+      "description": "获取订单详情",
+      "parameters": [
+        {
+          "name": "orderId",
+          "type": "string",
+          "required": true,
+          "description": "订单ID"
+        }
+      ],
+      "returns": {
+        "name": "order",
+        "type": "interface",
+        "required": true,
+        "description": "订单信息",
+        "interfaceRef": "Order"
+      }
+    },
+    {
+      "name": "createOrder",
+      "description": "创建订单",
+      "parameters": [
+        {
+          "name": "order",
+          "type": "interface",
+          "required": true,
+          "description": "订单信息",
+          "interfaceRef": "Order"
+        },
+        {
+          "name": "items",
+          "type": "array",
+          "required": true,
+          "description": "订单商品列表",
+          "itemType": "interface",
+          "interfaceRef": "OrderItem"
+        }
+      ],
+      "returns": {
+        "name": "orderId",
+        "type": "string",
+        "required": true,
+        "description": "订单ID"
+      }
+    },
+    {
+      "name": "updateOrder",
+      "description": "更新订单信息",
+      "parameters": [
+        {
+          "name": "orderId",
+          "type": "string",
+          "required": true,
+          "description": "订单ID"
+        },
+        {
+          "name": "order",
+          "type": "interface",
+          "required": true,
+          "description": "订单信息",
+          "interfaceRef": "Order"
+        }
+      ],
+      "returns": {
+        "name": "success",
+        "type": "boolean",
+        "required": true,
+        "description": "是否成功"
+      }
+    },
+    {
+      "name": "cancelOrder",
+      "description": "取消订单",
+      "parameters": [
+        {
+          "name": "orderId",
+          "type": "string",
+          "required": true,
+          "description": "订单ID"
+        }
+      ],
+      "returns": {
+        "name": "success",
+        "type": "boolean",
+        "required": true,
+        "description": "是否成功"
+      }
+    },
+    {
+      "name": "listOrders",
+      "description": "获取订单列表",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": false,
+          "description": "用户ID"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": false,
+          "description": "订单状态"
+        },
+        {
+          "name": "page",
+          "type": "number",
+          "required": false,
+          "description": "页码"
+        },
+        {
+          "name": "pageSize",
+          "type": "number",
+          "required": false,
+          "description": "每页数量"
+        }
+      ],
+      "returns": {
+        "name": "orders",
+        "type": "array",
+        "required": true,
+        "description": "订单列表",
+        "itemType": "interface",
+        "interfaceRef": "Order"
+      }
+    },
+    {
+      "name": "getOrderItems",
+      "description": "获取订单商品列表",
+      "parameters": [
+        {
+          "name": "orderId",
+          "type": "string",
+          "required": true,
+          "description": "订单ID"
+        }
+      ],
+      "returns": {
+        "name": "items",
+        "type": "array",
+        "required": true,
+        "description": "订单商品列表",
+        "itemType": "interface",
+        "interfaceRef": "OrderItem"
+      }
+    },
+    {
+      "name": "getOrderLogistics",
+      "description": "获取订单物流信息",
+      "parameters": [
+        {
+          "name": "orderId",
+          "type": "string",
+          "required": true,
+          "description": "订单ID"
+        }
+      ],
+      "returns": {
+        "name": "logistics",
+        "type": "interface",
+        "required": true,
+        "description": "物流信息",
+        "interfaceRef": "OrderLogistics"
+      }
+    },
+    {
+      "name": "updateOrderStatus",
+      "description": "更新订单状态",
+      "parameters": [
+        {
+          "name": "orderId",
+          "type": "string",
+          "required": true,
+          "description": "订单ID"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "description": "订单状态"
+        }
+      ],
+      "returns": {
+        "name": "success",
+        "type": "boolean",
+        "required": true,
+        "description": "是否成功"
+      }
+    }
+  ]
+}

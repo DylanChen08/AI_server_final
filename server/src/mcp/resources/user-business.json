@@ -1,0 +1,74 @@
+{
+  "name": "user-business",
+  "description": "用户业务知识",
+  "data": {
+    "usernames": [
+      "张三", "李四", "王五", "赵六", "孙七",
+      "周八", "吴九", "郑十", "陈十一", "林十二",
+      "黄小明", "刘小红", "杨小刚", "朱小丽", "徐小华"
+    ],
+    "emails": [
+      "zhangsan@example.com", "lisi@example.com", "wangwu@example.com",
+      "zhaoliu@example.com", "sunqi@example.com", "zhouba@example.com",
+      "wujiu@example.com", "zhengshi@example.com", "chenshiyi@example.com",
+      "linshier@example.com", "huangxiaoming@example.com", "liuxiaohong@example.com",
+      "yangxiaogang@example.com", "zhuxiaoli@example.com", "xuxiaohua@example.com"
+    ],
+    "phones": [
+      "13800138000", "13800138001", "13800138002", "13800138003", "13800138004",
+      "13800138005", "13800138006", "13800138007", "13800138008", "13800138009",
+      "13900139000", "13900139001", "13900139002", "13900139003", "13900139004"
+    ],
+    "statuses": [
+      "active", "inactive", "suspended", "pending"
+    ],
+    "genders": [
+      "男", "女", "保密"
+    ],
+    "nicknames": [
+      "小张", "小李", "小王", "小赵", "小孙",
+      "小明", "小红", "小刚", "小丽", "小华",
+      "阿明", "阿红", "阿刚", "阿丽", "阿华"
+    ],
+    "cities": [
+      "北京", "上海", "广州", "深圳", "杭州",
+      "成都", "武汉", "西安", "南京", "重庆"
+    ],
+    "addresses": [
+      "北京市朝阳区建国路88号",
+      "上海市浦东新区陆家嘴金融中心",
+      "广州市天河区珠江新城",
+      "深圳市南山区科技园",
+      "杭州市西湖区西溪湿地",
+      "成都市武侯区天府软件园",
+      "武汉市洪山区光谷广场",
+      "西安市雁塔区高新开发区",
+      "南京市建邺区河西新城",
+      "重庆市渝北区照母山"
+    ],
+    "bios": [
+      "热爱生活，享受每一天",
+      "工作狂，但也会适时放松",
+      "喜欢旅行和摄影",
+      "美食爱好者",
+      "运动达人",
+      "读书是我的爱好",
+      "音乐是我的生命",
+      "电影迷",
+      "游戏玩家",
+      "简单生活，快乐人生"
+    ],
+    "avatarUrls": [
+      "https://example.com/avatars/1.jpg",
+      "https://example.com/avatars/2.jpg",
+      "https://example.com/avatars/3.jpg",
+      "https://example.com/avatars/4.jpg",
+      "https://example.com/avatars/5.jpg",
+      "https://example.com/avatars/6.jpg",
+      "https://example.com/avatars/7.jpg",
+      "https://example.com/avatars/8.jpg",
+      "https://example.com/avatars/9.jpg",
+      "https://example.com/avatars/10.jpg"
+    ]
+  }
+}

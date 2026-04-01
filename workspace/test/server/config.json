@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mock-genernate-server": {
+      "command": "npx",
+      "args": [
+        "ts-node",
+        "src/mcp/main.ts"
+      ],
+      "cwd": "~/workspace/A2UI/server"
+    }
+  }
+}

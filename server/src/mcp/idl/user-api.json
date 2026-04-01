@@ -1,0 +1,256 @@
+{
+  "name": "user-api",
+  "version": "1.0.0",
+  "description": "用户API接口定义",
+  "interfaces": [
+    {
+      "name": "User",
+      "description": "用户信息",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        },
+        {
+          "name": "username",
+          "type": "string",
+          "required": true,
+          "description": "用户名"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true,
+          "description": "邮箱"
+        },
+        {
+          "name": "phone",
+          "type": "string",
+          "required": false,
+          "description": "手机号"
+        },
+        {
+          "name": "avatar",
+          "type": "string",
+          "required": false,
+          "description": "头像URL"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "description": "用户状态"
+        },
+        {
+          "name": "createdAt",
+          "type": "date",
+          "required": true,
+          "description": "创建时间"
+        },
+        {
+          "name": "updatedAt",
+          "type": "date",
+          "required": true,
+          "description": "更新时间"
+        }
+      ]
+    },
+    {
+      "name": "UserProfile",
+      "description": "用户资料",
+      "fields": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        },
+        {
+          "name": "nickname",
+          "type": "string",
+          "required": false,
+          "description": "昵称"
+        },
+        {
+          "name": "gender",
+          "type": "string",
+          "required": false,
+          "description": "性别"
+        },
+        {
+          "name": "birthday",
+          "type": "date",
+          "required": false,
+          "description": "生日"
+        },
+        {
+          "name": "bio",
+          "type": "string",
+          "required": false,
+          "description": "个人简介"
+        },
+        {
+          "name": "address",
+          "type": "string",
+          "required": false,
+          "description": "地址"
+        }
+      ]
+    }
+  ],
+  "methods": [
+    {
+      "name": "getUser",
+      "description": "获取用户信息",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        }
+      ],
+      "returns": {
+        "name": "user",
+        "type": "interface",
+        "required": true,
+        "description": "用户信息",
+        "interfaceRef": "User"
+      }
+    },
+    {
+      "name": "createUser",
+      "description": "创建用户",
+      "parameters": [
+        {
+          "name": "user",
+          "type": "interface",
+          "required": true,
+          "description": "用户信息",
+          "interfaceRef": "User"
+        }
+      ],
+      "returns": {
+        "name": "userId",
+        "type": "string",
+        "required": true,
+        "description": "创建的用户ID"
+      }
+    },
+    {
+      "name": "updateUser",
+      "description": "更新用户信息",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        },
+        {
+          "name": "user",
+          "type": "interface",
+          "required": true,
+          "description": "用户信息",
+          "interfaceRef": "User"
+        }
+      ],
+      "returns": {
+        "name": "success",
+        "type": "boolean",
+        "required": true,
+        "description": "是否成功"
+      }
+    },
+    {
+      "name": "deleteUser",
+      "description": "删除用户",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        }
+      ],
+      "returns": {
+        "name": "success",
+        "type": "boolean",
+        "required": true,
+        "description": "是否成功"
+      }
+    },
+    {
+      "name": "listUsers",
+      "description": "获取用户列表",
+      "parameters": [
+        {
+          "name": "page",
+          "type": "number",
+          "required": false,
+          "description": "页码"
+        },
+        {
+          "name": "pageSize",
+          "type": "number",
+          "required": false,
+          "description": "每页数量"
+        }
+      ],
+      "returns": {
+        "name": "users",
+        "type": "array",
+        "required": true,
+        "description": "用户列表",
+        "itemType": "interface",
+        "interfaceRef": "User"
+      }
+    },
+    {
+      "name": "getUserProfile",
+      "description": "获取用户资料",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        }
+      ],
+      "returns": {
+        "name": "profile",
+        "type": "interface",
+        "required": true,
+        "description": "用户资料",
+        "interfaceRef": "UserProfile"
+      }
+    },
+    {
+      "name": "updateUserProfile",
+      "description": "更新用户资料",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        },
+        {
+          "name": "profile",
+          "type": "interface",
+          "required": true,
+          "description": "用户资料",
+          "interfaceRef": "UserProfile"
+        }
+      ],
+      "returns": {
+        "name": "success",
+        "type": "boolean",
+        "required": true,
+        "description": "是否成功"
+      }
+    }
+  ]
+}
