@@ -3,5 +3,8 @@
  */
 import { createServer } from './server';
 
-console.error('####mcp server run')
-createServer();
+console.error('####mcp server run');
+createServer().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

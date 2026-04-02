@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "a2ui-mock-idl-local": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/server/run-mcp.cjs"]
+    }
+  }
+}

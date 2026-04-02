@@ -1,6 +1,6 @@
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import * as z from 'zod/v4';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -45,11 +45,11 @@ function getIDLFilePath(apiUrl: string): string | null {
   const normalizedPath = apiUrl.replace(/^\//, '').replace(/\/$/, '');
   const idlFileName = normalizedPath.replace(/\//g, '-') + '.json';
   const idlFilePath = path.join(IDL_DIR, idlFileName);
-  
+
   if (fs.existsSync(idlFilePath)) {
     return idlFilePath;
   }
-  
+
   return null;
 }
 
@@ -58,7 +58,7 @@ function loadIDL(apiUrl: string): IDLDefinition | null {
   if (!idlFilePath) {
     return null;
   }
-  
+
   try {
     const content = fs.readFileSync(idlFilePath, 'utf-8');
     return JSON.parse(content) as IDLDefinition;
@@ -68,88 +68,53 @@ function loadIDL(apiUrl: string): IDLDefinition | null {
   }
 }
 
-function getIdlContent(apiUrl: string): any {
+function getIdlContent(apiUrl: string): unknown {
   const idl = loadIDL(apiUrl);
   if (!idl) {
     return {
-      error: `No IDL definition found for API: ${apiUrl}`
+      error: `No IDL definition found for API: ${apiUrl}`,
     };
   }
-  
+
   return idl;
 }
 
-const TOOLS: any = [
+export async function createServer(): Promise<McpServer> {
+  const mcp = new McpServer({
+    name: 'a2ui-mock-idl',
+    version: '1.0.0',
+  });
+
+  mcp.registerTool(
+    'generate_mock',
     {
-        name: 'generate_mock',
-        description: '一个生成MOCK数据的工具，根据接口对应的IDL以及业务知识，生成可用的JSON格式的mock数据',
-        inputSchema: {
-            type: 'object',
-            properties: {
-                apiUrl: {
-                    type: 'string',
-                    description: '需要生成mock数据的接口URL路径',
-                },
-            },
-        },
-        required: ['apiUrl'],
-    }
-]
-
-export const createServer = () => {
-    const server = new Server({
-        name: 'mock-genernate-server',
-        version: '1.0.0',
-    }, {
-        capabilities: {
-            tools: {},
-        },
-    });
-    
-    server.setRequestHandler(ListToolsRequestSchema, async (request) => {
-        const usedResponse = TOOLS;
-        return {
-            tools: TOOLS,
-        }
-    });
-
-    server.setRequestHandler(CallToolRequestSchema, async (request) => {
-        const { name, arguments: args } = request.params;
-
-        if (name === 'generate_mock') {
-            const { apiUrl } = args as any;
-            
-            const IDLContent = getIdlContent(apiUrl);
-
-            const usedContent = `
+      description:
+        '一个生成MOCK数据的工具，根据接口对应的IDL以及业务知识，生成可用的JSON格式的mock数据',
+      inputSchema: z.object({
+        apiUrl: z.string().describe('需要生成mock数据的接口URL路径'),
+      }),
+    },
+    async (params: { apiUrl: string }) => {
+      const { apiUrl } = params;
+      const IDLContent = getIdlContent(apiUrl);
+      const usedContent = `
                 接口IDL定义如下：
-                ${ JSON.stringify(IDLContent, null, 2)}
+                ${JSON.stringify(IDLContent, null, 2)}
                 请按照IDL内容生成对应的mock数据
-            `
-            
-            return {
-                content: [
-                    {
-                        type: 'text',
-                        text: usedContent,
-                    },
-                ]
-            }
-        }
+            `;
 
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: 'Unknown tool',
-                },
-            ]
-        }
-    });
-    
-    const transport = new StdioServerTransport();
-    server.connect(transport);
-    
-    return server;
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: usedContent,
+          },
+        ],
+      };
+    }
+  );
+
+  const transport = new StdioServerTransport();
+  await mcp.connect(transport);
+  return mcp;
 }
-
