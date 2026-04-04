@@ -1,13 +1,17 @@
-import dotenv from 'dotenv';
-import path from 'path';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import { generateResponse } from './openai';
-import { functionRunner } from './openai';
+import { generateResponse, functionRunner } from './openai';
 
+const MAX_AGENT_STEPS = Math.max(
+  1,
+  Number.parseInt(process.env.AGENT_MAX_STEPS ?? '16', 10) || 16
+);
 
-export async function startTUI(systemPrompt: string = 'You are a helpful assistant.', tools: any = {}, toolDescriptions: any[] = []) {
-
+export async function startTUI(
+  systemPrompt: string = 'You are a helpful assistant.',
+  tools: any = {},
+  toolDescriptions: any[] = []
+) {
   try {
     console.log(chalk.blue('===================================='));
     console.log(chalk.blue('=            LLM TUI Tool          ='));
@@ -15,51 +19,63 @@ export async function startTUI(systemPrompt: string = 'You are a helpful assista
     console.log(chalk.green('Welcome! Ask any question to LLM.'));
     console.log(chalk.green('Type "exit" to quit.'));
     console.log(chalk.blue('===================================='));
-    
-    let historyMessages: any[] = [];
+
+    const historyMessages: any[] = [];
 
     while (true) {
       const { question } = await inquirer.prompt([
         {
           type: 'input',
           name: 'question',
-          message: chalk.yellow('You: ')
-        }
+          message: chalk.yellow('You: '),
+        },
       ]);
+
+      const q = String(question ?? '').trim();
+      if (q.toLowerCase() === 'exit') {
+        console.log(chalk.blue('Goodbye!'));
+        break;
+      }
+
       historyMessages.push({
         role: 'user',
         content: question,
       });
 
-      if (question.toLowerCase() === 'exit') {
-        console.log(chalk.blue('Goodbye!'));
-        break;
-      }
-
       try {
-        // agent loop：持续处理工具调用直到没有新的工具调用
         let hasToolCalls = true;
-        let assistantContent = '';
-        
+        let agentSteps = 0;
+
         while (hasToolCalls) {
-          const response = await generateResponse(historyMessages, systemPrompt, toolDescriptions);
+          if (++agentSteps > MAX_AGENT_STEPS) {
+            console.error(
+              chalk.red(
+                `已达到工具调用轮数上限（${MAX_AGENT_STEPS}），可在环境变量 AGENT_MAX_STEPS 中调整。`
+              )
+            );
+            break;
+          }
+
+          const response = await generateResponse(
+            historyMessages,
+            systemPrompt,
+            toolDescriptions
+          );
           let content = '';
-          let toolCalls: any[] = [];
-          
+          const toolCalls: any[] = [];
+
           for await (const chunk of response) {
             if (chunk.choices[0].delta.content) {
               content += chunk.choices[0].delta.content;
-              assistantContent += chunk.choices[0].delta.content;
               process.stdout.write(chunk.choices[0].delta.content);
             }
-            
+
             const delta = chunk.choices[0].delta;
 
             if (delta?.tool_calls) {
               for (const toolCall of delta.tool_calls) {
-                const existingCall = toolCalls.find(tc => tc.index === toolCall.index);
+                const existingCall = toolCalls.find((tc) => tc.index === toolCall.index);
                 if (existingCall) {
-                  // 累积 function.arguments
                   if (toolCall.function?.arguments) {
                     if (!existingCall.function) {
                       existingCall.function = {};
@@ -70,7 +86,6 @@ export async function startTUI(systemPrompt: string = 'You are a helpful assista
                       existingCall.function.arguments = toolCall.function.arguments;
                     }
                   }
-                  // 累积其他属性
                   if (toolCall.function?.name) {
                     if (!existingCall.function) {
                       existingCall.function = {};
@@ -84,55 +99,62 @@ export async function startTUI(systemPrompt: string = 'You are a helpful assista
                     existingCall.type = toolCall.type;
                   }
                 } else {
-                  // 添加新工具调用
                   toolCalls.push(toolCall);
                 }
               }
             }
           }
-          
-          // 将 assistant 的响应添加到历史消息
-          if (content) {
-            historyMessages.push({
-              role: 'assistant',
-              content: content
-            });
-          }
-          
-          // 将工具调用添加到历史消息
-          if (toolCalls && toolCalls.length > 0) {
-            
-            // 将工具调用添加到历史消息
-            historyMessages.push({
-              role: 'assistant',
-              tool_calls: toolCalls.map(tc => ({
+
+          toolCalls.forEach((tc, i) => {
+            if (!tc.id) tc.id = `auto_${agentSteps}_${i}`;
+          });
+
+          const hasTools = toolCalls.length > 0;
+          const text = content.trim();
+
+          if (text || hasTools) {
+            const assistantMsg: Record<string, unknown> = { role: 'assistant' };
+            if (text) {
+              assistantMsg.content = content;
+            } else if (hasTools) {
+              assistantMsg.content = null;
+            }
+            if (hasTools) {
+              assistantMsg.tool_calls = toolCalls.map((tc) => ({
                 id: tc.id,
-                type: tc.type,
+                type: tc.type ?? 'function',
                 function: {
-                  name: tc.function.name,
-                  arguments: tc.function.arguments
-                }
-              }))
-            });
-            
-            // 执行工具调用
+                  name: tc.function?.name ?? '',
+                  arguments: tc.function?.arguments ?? '',
+                },
+              }));
+            }
+            historyMessages.push(assistantMsg);
+          }
+
+          if (hasTools) {
             const toolResults = await functionRunner(toolCalls, tools);
-            
-            // 为每个工具调用添加 tool 消息（重要：必须为每个 tool_call_id 都添加响应）
-            if (toolResults && toolResults.length > 0) {
-              toolResults.forEach((resultItem) => {
-                historyMessages.push({
-                  role: 'tool',
-                  tool_call_id: resultItem.tool_call_id,
-                  content: resultItem.result
+            const byId = new Map(
+              toolResults.map((r) => [r.tool_call_id, r.result] as const)
+            );
+
+            for (const tc of toolCalls) {
+              const id = tc.id ?? '';
+              const payload =
+                byId.get(id) ??
+                JSON.stringify({
+                  error: '未返回与该 tool_call_id 对应的工具结果',
+                  tool_call_id: id,
                 });
+              historyMessages.push({
+                role: 'tool',
+                tool_call_id: id,
+                content: payload,
               });
             }
-            
-            // 继续循环，因为还有工具调用
+
             hasToolCalls = true;
           } else {
-            // 没有工具调用，结束循环
             hasToolCalls = false;
           }
         }
@@ -141,7 +163,7 @@ export async function startTUI(systemPrompt: string = 'You are a helpful assista
       }
 
       console.log(chalk.blue('\n'));
-      console.log(chalk.cyan('LLM: '));  
+      console.log(chalk.cyan('LLM: '));
       console.log(chalk.blue('===================================='));
     }
   } catch (error) {
@@ -149,7 +171,6 @@ export async function startTUI(systemPrompt: string = 'You are a helpful assista
   }
 }
 
-// 如果直接运行此文件
 if (require.main === module) {
   startTUI().catch(console.error);
 }
