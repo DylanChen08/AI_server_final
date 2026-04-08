@@ -17,6 +17,7 @@ function defaultBaseURL(): string {
   }
 }
 
+
 function defaultModel(): string {
   const explicit = trimEnv(process.env.OPENAI_MODEL) || trimEnv(process.env.LLM_MODEL);
   if (explicit) return explicit;
